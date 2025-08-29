@@ -6,5 +6,6 @@ CREATE TABLE incidents (
     status VARCHAR(20) NOT NULL CHECK (status IN ('ABERTO', 'EM_ANDAMENTO', 'RESOLVIDO', 'FECHADO')),
     responsavel_email VARCHAR(255) NOT NULL,
     data_abertura TIMESTAMP,
-    data_atualizacao TIMESTAMP
+    data_atualizacao TIMESTAMP,
+    tags VARCHAR(255)[]
 );
