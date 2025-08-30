@@ -3,21 +3,14 @@ package com.example.crud.controller;
 import com.example.crud.dto.AuthResponse;
 import com.example.crud.dto.LoginRequest;
 import com.example.crud.dto.RegisterRequest;
-import com.example.crud.model.User;
-import com.example.crud.repository.UsersRepository;
 import com.example.crud.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/users")
-public class UsersController {
-
-    @Autowired
-    private UsersRepository usersRepository;
+@RequestMapping("/auth")
+public class AuthController {
 
     @Autowired
     private AuthService authService;
@@ -42,10 +35,5 @@ public class UsersController {
             return ResponseEntity.badRequest().body(new AuthResponse(null, e.getMessage()));
         }
     }
-
-
-    @GetMapping
-    public List<User> getAllUsers() {
-        return usersRepository.findAll();
-    }
 }
+
