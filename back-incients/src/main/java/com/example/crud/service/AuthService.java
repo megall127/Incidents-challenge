@@ -1,8 +1,9 @@
 package com.example.crud.service;
 
-import com.example.crud.dto.AuthResponse;
+import com.example.crud.dto.LoginResponse;
 import com.example.crud.dto.LoginRequest;
 import com.example.crud.dto.RegisterRequest;
+import com.example.crud.dto.RegisterResponse;
 import com.example.crud.model.User;
 import com.example.crud.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public AuthResponse register(RegisterRequest request) {
+    public RegisterResponse register(RegisterRequest request) {
 
         User existingUser = usersRepository.findByEmail(request.getEmail());
         if (existingUser != null) {
@@ -35,16 +36,12 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setSenha(passwordEncoder.encode(request.getSenha()));
 
-
         User savedUser = usersRepository.save(user);
 
-
-        String token = jwtService.generateToken(savedUser.getEmail());
-
-        return new AuthResponse(token, "Usuário cadastrado com sucesso!");
+        return new RegisterResponse("Usuário cadastrado com sucesso!");
     }
 
-    public AuthResponse login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
 
         User user = usersRepository.findByEmail(request.getEmail());
         
@@ -60,7 +57,7 @@ public class AuthService {
     
         String token = jwtService.generateToken(user.getEmail());
 
-        return new AuthResponse(token, "Login realizado com sucesso!");
+        return new LoginResponse(token, "Login realizado com sucesso!");
     }
 }
 

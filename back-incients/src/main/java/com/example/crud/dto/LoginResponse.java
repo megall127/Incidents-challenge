@@ -1,12 +1,19 @@
 package com.example.crud.dto;
 
-public class AuthResponse {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Resposta de login de usuário")
+public class LoginResponse {
+    
+    @Schema(description = "Token JWT", example = "eyJhbGciOiJIUzI1NiJ9...")
     private String token;
+    
+    @Schema(description = "Mensagem de confirmação", example = "Login realizado com sucesso!")
     private String message;
 
-    public AuthResponse() {}
+    public LoginResponse() {}
 
-    public AuthResponse(String token, String message) {
+    public LoginResponse(String token, String message) {
         this.token = token;
         this.message = message;
     }
@@ -27,4 +34,3 @@ public class AuthResponse {
         this.message = message;
     }
 }
-
