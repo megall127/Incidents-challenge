@@ -149,4 +149,36 @@ public class IncidentController {
         
         return ResponseEntity.status(HttpStatus.CREATED).body(commentResponse);
     }
+    
+    @GetMapping("/incidents/{id}/comments")
+    public ResponseEntity<?> getCommentsByIncidentId(@PathVariable UUID id) {
+        Incident incident = incidentRepository.findById(id).orElse(null);
+        
+        if (incident == null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Incidente não encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        
+        List<Comment> comments = commentRepository.findByIncidentIdOrderByDataCriacaoDesc(id);
+        
+        if (comments.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Nenhum comentário encontrado para este incidente");
+            response.put("incidentId", id);
+            return ResponseEntity.ok(response);
+        }
+        
+        List<CommentResponse> commentResponses = comments.stream()
+            .map(comment -> new CommentResponse(
+                comment.getId(),
+                comment.getIncidentId(),
+                comment.getAutor(),
+                comment.getMensagem(),
+                comment.getDataCriacao()
+            ))
+            .toList();
+        
+        return ResponseEntity.ok(commentResponses);
+    }
 }
