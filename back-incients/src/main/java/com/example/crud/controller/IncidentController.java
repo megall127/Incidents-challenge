@@ -1,8 +1,13 @@
 package com.example.crud.controller;
 
 import com.example.crud.model.Incident;
+import com.example.crud.model.Comment;
 import com.example.crud.repository.IncidentRepository;
+import com.example.crud.repository.CommentRepository;
 import com.example.crud.dto.IncidentRequest;
+import com.example.crud.dto.IncidentUpdateRequest;
+import com.example.crud.dto.CommentRequest;
+import com.example.crud.dto.CommentResponse;
 import com.example.crud.enums.Priority;
 import com.example.crud.enums.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +26,9 @@ public class IncidentController {
 
     @Autowired
     private IncidentRepository incidentRepository;
+    
+    @Autowired
+    private CommentRepository commentRepository;
 
     @GetMapping("/incidents")
     public ResponseEntity<?> getAllIncidents() {
@@ -59,5 +67,86 @@ public class IncidentController {
         Incident savedIncident = incidentRepository.save(incident);
         
         return ResponseEntity.status(HttpStatus.CREATED).body(savedIncident);
+    }
+    
+    @PutMapping("/incidents/{id}")
+    public ResponseEntity<?> updateIncident(@PathVariable UUID id, @Valid @RequestBody IncidentUpdateRequest request) {
+        Incident existingIncident = incidentRepository.findById(id).orElse(null);
+        
+        if (existingIncident == null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Incidente não encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+
+        if (request.getTitulo() != null) {
+            existingIncident.setTitulo(request.getTitulo());
+        }
+        if (request.getDescricao() != null) {
+            existingIncident.setDescricao(request.getDescricao());
+        }
+        if (request.getPrioridade() != null) {
+            existingIncident.setPrioridade(request.getPrioridade());
+        }
+        if (request.getStatus() != null) {
+            existingIncident.setStatus(request.getStatus());
+        }
+        if (request.getResponsavelEmail() != null) {
+            existingIncident.setResponsavelEmail(request.getResponsavelEmail());
+        }
+        if (request.getTags() != null) {
+            existingIncident.setTags(request.getTags());
+        }
+        
+        Incident updatedIncident = incidentRepository.save(existingIncident);
+        
+        return ResponseEntity.ok(updatedIncident);
+    }
+    
+    @DeleteMapping("/incidents/{id}")
+    public ResponseEntity<?> deleteIncident(@PathVariable UUID id) {
+        Incident existingIncident = incidentRepository.findById(id).orElse(null);
+        
+        if (existingIncident == null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Incidente não encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        
+        incidentRepository.delete(existingIncident);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Incidente deletado com sucesso");
+        response.put("deletedIncident", existingIncident);
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    @PostMapping("/incidents/{id}/comments")
+    public ResponseEntity<?> addCommentToIncident(@PathVariable UUID id, @Valid @RequestBody CommentRequest request) {
+        Incident incident = incidentRepository.findById(id).orElse(null);
+        
+        if (incident == null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Incidente não encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        
+        Comment comment = new Comment();
+        comment.setIncidentId(id);
+        comment.setAutor(request.getAutor());
+        comment.setMensagem(request.getMensagem());
+        
+        Comment savedComment = commentRepository.save(comment);
+        
+        CommentResponse commentResponse = new CommentResponse(
+            savedComment.getId(),
+            savedComment.getIncidentId(),
+            savedComment.getAutor(),
+            savedComment.getMensagem(),
+            savedComment.getDataCriacao()
+        );
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(commentResponse);
     }
 }

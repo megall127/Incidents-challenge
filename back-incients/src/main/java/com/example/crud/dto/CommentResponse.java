@@ -17,7 +17,7 @@ public class CommentResponse {
     @Schema(description = "Nome do autor", example = "João Silva")
     private String autor;
     
-    @Schema(description = "Mensagem do comentário", example = "Este incidente foi resolvido com sucesso!")
+    @Schema(description = "Mensagem do comentário", example = "Este incidente foi resolvido.")
     private String mensagem;
     
     @Schema(description = "Data de criação", example = "2024-01-15T10:30:00")
