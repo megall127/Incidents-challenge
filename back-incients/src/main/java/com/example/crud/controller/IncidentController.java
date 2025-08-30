@@ -8,6 +8,7 @@ import com.example.crud.dto.IncidentRequest;
 import com.example.crud.dto.IncidentUpdateRequest;
 import com.example.crud.dto.CommentRequest;
 import com.example.crud.dto.CommentResponse;
+import com.example.crud.dto.StatusUpdateRequest;
 import com.example.crud.enums.Priority;
 import com.example.crud.enums.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -180,5 +181,33 @@ public class IncidentController {
             .toList();
         
         return ResponseEntity.ok(commentResponses);
+    }
+    
+    @PatchMapping("/incidents/{id}/status")
+    public ResponseEntity<?> updateIncidentStatus(@PathVariable UUID id, @Valid @RequestBody StatusUpdateRequest request) {
+       
+        Incident existingIncident = incidentRepository.findById(id).orElse(null);
+        
+        if (existingIncident == null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Incidente não encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        
+       
+        Status oldStatus = existingIncident.getStatus();
+        existingIncident.setStatus(request.getStatus());
+        
+    
+        Incident updatedIncident = incidentRepository.save(existingIncident);
+    
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Status do incidente atualizado com sucesso");
+        response.put("incidentId", id);
+        response.put("oldStatus", oldStatus);
+        response.put("newStatus", request.getStatus());
+        response.put("incident", updatedIncident);
+        
+        return ResponseEntity.ok(response);
     }
 }
