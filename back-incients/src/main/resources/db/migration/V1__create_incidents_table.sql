@@ -1,5 +1,5 @@
 CREATE TABLE incidents (
-    id BIGSERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     titulo VARCHAR(120) NOT NULL,
     descricao VARCHAR(5000) NULL,
     prioridade VARCHAR(10) NOT NULL CHECK (prioridade IN ('BAIXA', 'MEDIA', 'ALTA', 'CRITICA')),
