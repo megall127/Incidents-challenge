@@ -1,1 +1,125 @@
-<p>home works!</p>
+<div class="home-container">
+  <header class="header">
+    <h1>Sistema de Incidentes</h1>
+    <button class="logout-btn" (click)="logout()">Sair</button>
+  </header>
+
+  <main class="main-content">
+    <div class="welcome-section">
+      <h2>Bem-vindo ao Sistema de Gerenciamento de Incidentes</h2>
+      <p>Gerencie seus incidentes de forma eficiente e organizada.</p>
+    </div>
+
+    <div class="actions-section">
+      <button class="create-btn" (click)="openModal()">
+        <span>+</span>
+        Criar Novo Incidente
+      </button>
+    </div>
+  </main>
+
+  <!-- Modal de Criação de Incidente -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Criar Novo Incidente</h3>
+        <button class="close-btn" (click)="closeModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <form (ngSubmit)="createIncident()" #incidentForm="ngForm">
+          <div class="form-group">
+            <label for="titulo">Título *:</label>
+            <input 
+              type="text" 
+              id="titulo" 
+              name="titulo" 
+              [(ngModel)]="incidentData.titulo" 
+              required 
+              placeholder="Digite o título do incidente"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="descricao">Descrição:</label>
+            <textarea 
+              id="descricao" 
+              name="descricao" 
+              [(ngModel)]="incidentData.descricao" 
+              rows="4"
+              placeholder="Descreva o incidente detalhadamente"
+            ></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prioridade">Prioridade:</label>
+              <select id="prioridade" name="prioridade" [(ngModel)]="incidentData.prioridade">
+                <option *ngFor="let prioridade of prioridades" [value]="prioridade">
+                  {{ prioridade }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="status">Status:</label>
+              <select id="status" name="status" [(ngModel)]="incidentData.status">
+                <option *ngFor="let status of status" [value]="status">
+                  {{ status }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="responsavelEmail">Email do Responsável *:</label>
+            <input 
+              type="email" 
+              id="responsavelEmail" 
+              name="responsavelEmail" 
+              [(ngModel)]="incidentData.responsavelEmail" 
+              required 
+              placeholder="Digite o email do responsável"
+            >
+          </div>
+
+          <div class="form-group">
+            <label>Tags:</label>
+            <div class="tags-container">
+              <div class="tags-list">
+                <span 
+                  *ngFor="let tag of incidentData.tags; let i = index" 
+                  class="tag"
+                >
+                  {{ tag }}
+                  <button type="button" class="remove-tag" (click)="removeTag(i)">&times;</button>
+                </span>
+              </div>
+              <button type="button" class="add-tag-btn" (click)="addTag()">
+                + Adicionar Tag
+              </button>
+            </div>
+          </div>
+
+          <div class="error-message" *ngIf="errorMessage">
+            {{ errorMessage }}
+          </div>
+
+          <div class="success-message" *ngIf="successMessage">
+            {{ successMessage }}
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="cancel-btn" (click)="closeModal()">
+              Cancelar
+            </button>
+            <button type="submit" class="submit-btn" [disabled]="isLoading || !incidentForm.form.valid">
+              <span *ngIf="isLoading">Criando...</span>
+              <span *ngIf="!isLoading">Criar Incidente</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
