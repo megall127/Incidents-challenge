@@ -48,7 +48,7 @@ public class AuthController {
             LoginResponse response = authService.login(request);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new LoginResponse(null, e.getMessage()));
+            return ResponseEntity.badRequest().body(new LoginResponse(null, null, e.getMessage()));
         }
     }
 }

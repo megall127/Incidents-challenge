@@ -2,17 +2,10 @@ package com.example.crud.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import java.util.UUID;
 
 @Schema(description = "Dados para criação de comentário")
 public class CommentRequest {
-    
-    @Schema(description = "ID do incidente", example = "123e4567-e89b-12d3-a456-426614174000")
-    @NotNull(message = "ID do incidente é obrigatório")
-    private UUID incidentId;
     
     @Schema(description = "Nome do autor do comentário", example = "Leandro Wilker")
     @NotBlank(message = "Autor é obrigatório")
@@ -26,18 +19,9 @@ public class CommentRequest {
     
     public CommentRequest() {}
     
-    public CommentRequest(UUID incidentId, String autor, String mensagem) {
-        this.incidentId = incidentId;
+    public CommentRequest(String autor, String mensagem) {
         this.autor = autor;
         this.mensagem = mensagem;
-    }
-    
-    public UUID getIncidentId() {
-        return incidentId;
-    }
-    
-    public void setIncidentId(UUID incidentId) {
-        this.incidentId = incidentId;
     }
     
     public String getAutor() {

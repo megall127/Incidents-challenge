@@ -61,7 +61,7 @@ public class IncidentController {
         incident.setTitulo(request.getTitulo());
         incident.setDescricao(request.getDescricao());
         incident.setPrioridade(request.getPrioridade() != null ? request.getPrioridade() : Priority.MEDIA);
-        incident.setStatus(request.getStatus() != null ? request.getStatus() : Status.ABERTA);
+        incident.setStatus(request.getStatus() != null ? request.getStatus() : Status.ABERTO);
         incident.setResponsavelEmail(request.getResponsavelEmail());
         incident.setTags(request.getTags());
         

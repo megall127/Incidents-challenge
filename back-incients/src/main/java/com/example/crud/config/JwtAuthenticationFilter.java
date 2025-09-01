@@ -39,13 +39,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String userEmail;
         
-
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
         
-       
         jwt = authHeader.substring(7);
         
         try {
@@ -72,7 +70,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.error("Erro ao processar token JWT: " + e.getMessage());
             SecurityContextHolder.clearContext();
         }
-        
         filterChain.doFilter(request, response);
     }
 }

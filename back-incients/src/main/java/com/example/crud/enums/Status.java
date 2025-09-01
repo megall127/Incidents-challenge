@@ -1,7 +1,7 @@
 package com.example.crud.enums;
 
 public enum Status {
-    ABERTA,
+    ABERTO,
     EM_ANDAMENTO,
     RESOLVIDA,
     CANCELADA
