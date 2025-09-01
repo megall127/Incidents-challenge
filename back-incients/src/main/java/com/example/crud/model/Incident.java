@@ -47,6 +47,9 @@ public class Incident {
 
     private LocalDateTime dataAtualizacao;
 
+    @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
+
     @PrePersist
     public void prePersist() {
         this.dataAbertura = LocalDateTime.now();
@@ -85,4 +88,7 @@ public class Incident {
 
     public LocalDateTime getDataAtualizacao() { return dataAtualizacao; }
     public void setDataAtualizacao(LocalDateTime dataAtualizacao) { this.dataAtualizacao = dataAtualizacao; }
+
+    public List<Comment> getComments() { return comments; }
+    public void setComments(List<Comment> comments) { this.comments = comments; }
 }

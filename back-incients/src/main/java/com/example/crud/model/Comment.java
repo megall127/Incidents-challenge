@@ -24,7 +24,7 @@ public class Comment {
     @Column(name = "data_criacao", nullable = false)
     private LocalDateTime dataCriacao;
     
-    // Relacionamento com Incident (opcional, para consultas)
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "incident_id", insertable = false, updatable = false)
     private Incident incident;

@@ -6,6 +6,7 @@ import com.example.crud.repository.IncidentRepository;
 import com.example.crud.repository.CommentRepository;
 import com.example.crud.dto.IncidentRequest;
 import com.example.crud.dto.IncidentUpdateRequest;
+import com.example.crud.dto.IncidentResponse;
 import com.example.crud.dto.CommentRequest;
 import com.example.crud.dto.CommentResponse;
 import com.example.crud.dto.StatusUpdateRequest;
@@ -31,15 +32,54 @@ public class IncidentController {
     @Autowired
     private CommentRepository commentRepository;
 
+    // Método auxiliar para converter Incident para IncidentResponse
+    private IncidentResponse convertToIncidentResponse(Incident incident) {
+        List<CommentResponse> commentResponses = null;
+        
+        // Buscar comentários do banco de dados para garantir que estejam carregados
+        List<Comment> comments = commentRepository.findByIncidentIdOrderByDataCriacaoDesc(incident.getId());
+        
+        if (comments != null && !comments.isEmpty()) {
+            commentResponses = comments.stream()
+                .map(comment -> new CommentResponse(
+                    comment.getId(),
+                    comment.getIncidentId(),
+                    comment.getAutor(),
+                    comment.getMensagem(),
+                    comment.getDataCriacao()
+                ))
+                .toList();
+        }
+        
+        return new IncidentResponse(
+            incident.getId(),
+            incident.getTitulo(),
+            incident.getDescricao(),
+            incident.getPrioridade(),
+            incident.getStatus(),
+            incident.getResponsavelEmail(),
+            incident.getTags(),
+            incident.getDataAbertura(),
+            incident.getDataAtualizacao(),
+            commentResponses
+        );
+    }
+
     @GetMapping("/incidents")
     public ResponseEntity<?> getAllIncidents() {
         List<Incident> incidents = incidentRepository.findAll();
+        System.out.println( "incidents: " + incidents);
         if (incidents.isEmpty()) {
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Não há incidentes cadastrados no sistema");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
-        return ResponseEntity.ok(incidents);
+        
+        List<IncidentResponse> incidentResponses = incidents.stream()
+            .map(this::convertToIncidentResponse)
+            .toList();
+        
+        return ResponseEntity.ok(incidentResponses);
     }
     
     @GetMapping("/incidents/{id}")
@@ -52,7 +92,8 @@ public class IncidentController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
         
-        return ResponseEntity.ok(incident);
+        IncidentResponse incidentResponse = convertToIncidentResponse(incident);
+        return ResponseEntity.ok(incidentResponse);
     }
     
     @PostMapping("/incidents")
@@ -67,7 +108,8 @@ public class IncidentController {
         
         Incident savedIncident = incidentRepository.save(incident);
         
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedIncident);
+        IncidentResponse incidentResponse = convertToIncidentResponse(savedIncident);
+        return ResponseEntity.status(HttpStatus.CREATED).body(incidentResponse);
     }
     
     @PutMapping("/incidents/{id}")
@@ -101,7 +143,8 @@ public class IncidentController {
         
         Incident updatedIncident = incidentRepository.save(existingIncident);
         
-        return ResponseEntity.ok(updatedIncident);
+        IncidentResponse incidentResponse = convertToIncidentResponse(updatedIncident);
+        return ResponseEntity.ok(incidentResponse);
     }
     
     @DeleteMapping("/incidents/{id}")
@@ -118,7 +161,7 @@ public class IncidentController {
         
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Incidente deletado com sucesso");
-        response.put("deletedIncident", existingIncident);
+        response.put("deletedIncident", convertToIncidentResponse(existingIncident));
         
         return ResponseEntity.ok(response);
     }
@@ -206,7 +249,7 @@ public class IncidentController {
         response.put("incidentId", id);
         response.put("oldStatus", oldStatus);
         response.put("newStatus", request.getStatus());
-        response.put("incident", updatedIncident);
+        response.put("incident", convertToIncidentResponse(updatedIncident));
         
         return ResponseEntity.ok(response);
     }
