@@ -17,7 +17,6 @@
       </button>
     </div>
 
-    <!-- Lista de Incidentes -->
     <div class="incidents-section">
       <h3>Incidentes</h3>
       
@@ -34,6 +33,14 @@
         <div class="incident-card" *ngFor="let incident of incidents">
           <div class="incident-header">
             <h4 class="incident-title">{{ incident.titulo }}</h4>
+            <div class="incident-actions">
+              <button class="edit-btn" (click)="editIncident(incident)">
+                Editar
+              </button>
+              <button class="delete-btn" (click)="deleteIncident(incident.id)">
+                Excluir
+              </button>
+            </div>
             <div class="incident-badges">
               <span class="priority-badge" [class]="getPriorityClass(incident.prioridade)">
                 {{ incident.prioridade }}
@@ -63,17 +70,17 @@
             </div>
           </div>
 
-          <!-- Seção de Comentários -->
+   
           <div class="comments-section">
             <h5 class="comments-title">Comentários</h5>
             
-            <!-- Loading dos comentários -->
+       
             <div class="loading-comments" *ngIf="loadingComments[incident.id]">
               <div class="loading-spinner small"></div>
               <span>Carregando comentários...</span>
             </div>
 
-            <!-- Lista de comentários -->
+      
             <div class="comments-list" *ngIf="!loadingComments[incident.id]">
               <div class="comment-item" *ngFor="let comment of comments[incident.id]">
                 <div class="comment-header">
@@ -88,7 +95,6 @@
               </div>
             </div>
 
-            <!-- Campo para adicionar novo comentário -->
             <div class="add-comment-section">
               <div class="comment-input-container">
                 <textarea 
@@ -113,108 +119,9 @@
     </div>
   </main>
 
-  <!-- Modal de Criação de Incidente -->
-  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>Criar Novo Incidente</h3>
-        <button class="close-btn" (click)="closeModal()">&times;</button>
-      </div>
-
-      <div class="modal-body">
-        <form (ngSubmit)="createIncident()" #incidentForm="ngForm">
-          <div class="form-group">
-            <label for="titulo">Título *:</label>
-            <input 
-              type="text" 
-              id="titulo" 
-              name="titulo" 
-              [(ngModel)]="incidentData.titulo" 
-              required 
-              placeholder="Digite o título do incidente"
-            >
-          </div>
-
-          <div class="form-group">
-            <label for="descricao">Descrição:</label>
-            <textarea 
-              id="descricao" 
-              name="descricao" 
-              [(ngModel)]="incidentData.descricao" 
-              rows="4"
-              placeholder="Descreva o incidente detalhadamente"
-            ></textarea>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="prioridade">Prioridade:</label>
-              <select id="prioridade" name="prioridade" [(ngModel)]="incidentData.prioridade">
-                <option *ngFor="let prioridade of prioridades" [value]="prioridade">
-                  {{ prioridade }}
-                </option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="status">Status:</label>
-              <select id="status" name="status" [(ngModel)]="incidentData.status">
-                <option *ngFor="let status of status" [value]="status">
-                  {{ status }}
-                </option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="responsavelEmail">Email do Responsável *:</label>
-            <input 
-              type="email" 
-              id="responsavelEmail" 
-              name="responsavelEmail" 
-              [(ngModel)]="incidentData.responsavelEmail" 
-              required 
-              placeholder="Digite o email do responsável"
-            >
-          </div>
-
-          <div class="form-group">
-            <label>Tags:</label>
-            <div class="tags-container">
-              <div class="tags-list">
-                <span 
-                  *ngFor="let tag of incidentData.tags; let i = index" 
-                  class="tag"
-                >
-                  {{ tag }}
-                  <button type="button" class="remove-tag" (click)="removeTag(i)">&times;</button>
-                </span>
-              </div>
-              <button type="button" class="add-tag-btn" (click)="addTag()">
-                + Adicionar Tag
-              </button>
-            </div>
-          </div>
-
-          <div class="error-message" *ngIf="errorMessage">
-            {{ errorMessage }}
-          </div>
-
-          <div class="success-message" *ngIf="successMessage">
-            {{ successMessage }}
-          </div>
-
-          <div class="modal-actions">
-            <button type="button" class="cancel-btn" (click)="closeModal()">
-              Cancelar
-            </button>
-            <button type="submit" class="submit-btn" [disabled]="isLoading || !incidentForm.form.valid">
-              <span *ngIf="isLoading">Criando...</span>
-              <span *ngIf="!isLoading">Criar Incidente</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+  <app-create-incident-modal 
+    [showModal]="showModal"
+    (modalClosed)="closeModal()"
+    (incidentCreated)="onIncidentCreated($event)"
+  ></app-create-incident-modal>
 </div>

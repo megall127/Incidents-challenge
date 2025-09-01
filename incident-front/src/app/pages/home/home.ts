@@ -5,18 +5,16 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { IncidentService } from '../../services/incident.service';
 import { Incident, IncidentRequest, Comment, CommentRequest } from '../../interfaces/incident.interface';
+import { CreateIncidentModal } from '../../components/create-incident-modal';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, CreateIncidentModal],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
 export class Home implements OnInit {
   showModal = false;
-  isLoading = false;
-  errorMessage = '';
-  successMessage = '';
   incidents: Incident[] = [];
   loadingIncidents = false;
 
@@ -24,18 +22,6 @@ export class Home implements OnInit {
   newComment: { [incidentId: string]: string } = {};
   loadingComments: { [incidentId: string]: boolean } = {};
   submittingComment: { [incidentId: string]: boolean } = {};
-
-  incidentData: IncidentRequest = {
-    titulo: '',
-    descricao: '',
-    prioridade: 'MEDIA',
-    status: 'ABERTO',
-    responsavelEmail: '',
-    tags: []
-  };
-
-  prioridades = ['BAIXA', 'MEDIA', 'ALTA', 'CRITICA'];
-  status = ['ABERTO', 'EM_ANDAMENTO', 'RESOLVIDA', 'CANCELADA'];
 
   constructor(
     private authService: AuthService,
@@ -49,25 +35,10 @@ export class Home implements OnInit {
 
   openModal(): void {
     this.showModal = true;
-    this.resetForm();
   }
 
   closeModal(): void {
     this.showModal = false;
-    this.resetForm();
-  }
-
-  resetForm(): void {
-    this.incidentData = {
-      titulo: '',
-      descricao: '',
-      prioridade: 'MEDIA',
-      status: 'ABERTO',
-      responsavelEmail: '',
-      tags: []
-    };
-    this.errorMessage = '';
-    this.successMessage = '';
   }
 
   loadIncidents(): void {
@@ -130,45 +101,15 @@ export class Home implements OnInit {
     });
   }
 
-  addTag(): void {
-    const tag = prompt('Digite uma tag:');
-    if (tag && tag.trim()) {
-      if (!this.incidentData.tags) {
-        this.incidentData.tags = [];
-      }
-      this.incidentData.tags.push(tag.trim());
-    }
-  }
-
-  removeTag(index: number): void {
-    if (this.incidentData.tags) {
-      this.incidentData.tags.splice(index, 1);
-    }
-  }
-
-  createIncident(): void {
-    if (!this.incidentData.titulo || !this.incidentData.responsavelEmail) {
-      this.errorMessage = 'Título e email do responsável são obrigatórios';
-      return;
-    }
-
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    this.incidentService.createIncident(this.incidentData).subscribe({
+  onIncidentCreated(incidentData: IncidentRequest): void {
+    this.incidentService.createIncident(incidentData).subscribe({
       next: (incident) => {
-        this.isLoading = false;
-        this.successMessage = 'Incidente criado com sucesso!';
         this.incidents.unshift(incident);
-        
-        setTimeout(() => {
-          this.closeModal();
-        }, 1500);
+        this.closeModal();
       },
       error: (error) => {
-        this.isLoading = false;
-        this.errorMessage = 'Erro ao criar incidente. Tente novamente.';
         console.error('Erro ao criar incidente:', error);
+        alert('Erro ao criar incidente. Tente novamente.');
       }
     });
   }
@@ -201,6 +142,31 @@ export class Home implements OnInit {
       hour: '2-digit',
       minute: '2-digit'
     });
+  }
+
+  editIncident(incident: Incident): void {
+    alert(`Editar incidente: ${incident.titulo}`);
+    console.log('Editar incidente:', incident);
+  }
+
+  deleteIncident(incidentId: string): void {
+    if (confirm('Tem certeza que deseja excluir este incidente? Esta ação não pode ser desfeita.')) {
+      this.incidentService.deleteIncident(incidentId).subscribe({
+        next: () => {
+          this.incidents = this.incidents.filter(incident => incident.id !== incidentId);
+          delete this.comments[incidentId];
+          delete this.newComment[incidentId];
+          delete this.loadingComments[incidentId];
+          delete this.submittingComment[incidentId];
+          
+          alert('Incidente excluído com sucesso!');
+        },
+        error: (error) => {
+          console.error('Erro ao excluir incidente:', error);
+          alert('Erro ao excluir incidente. Tente novamente.');
+        }
+      });
+    }
   }
 
   logout(): void {
