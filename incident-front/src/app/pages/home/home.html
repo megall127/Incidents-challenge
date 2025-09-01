@@ -124,4 +124,11 @@
     (modalClosed)="closeModal()"
     (incidentCreated)="onIncidentCreated($event)"
   ></app-create-incident-modal>
+
+  <app-edit-incident-modal 
+    [showModal]="showEditModal"
+    [incident]="editingIncident"
+    (modalClosed)="closeEditModal()"
+    (incidentUpdated)="onIncidentUpdated($event)"
+  ></app-edit-incident-modal>
 </div>

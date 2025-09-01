@@ -6,15 +6,18 @@ import { AuthService } from '../../services/auth';
 import { IncidentService } from '../../services/incident.service';
 import { Incident, IncidentRequest, Comment, CommentRequest } from '../../interfaces/incident.interface';
 import { CreateIncidentModal } from '../../components/create-incident-modal';
+import { EditIncidentModal } from '../../components/edit-incident-modal';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, FormsModule, RouterModule, CreateIncidentModal],
+  imports: [CommonModule, FormsModule, RouterModule, CreateIncidentModal, EditIncidentModal],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
 export class Home implements OnInit {
   showModal = false;
+  showEditModal = false;
+  editingIncident: Incident | null = null;
   incidents: Incident[] = [];
   loadingIncidents = false;
 
@@ -145,8 +148,29 @@ export class Home implements OnInit {
   }
 
   editIncident(incident: Incident): void {
-    alert(`Editar incidente: ${incident.titulo}`);
-    console.log('Editar incidente:', incident);
+    this.editingIncident = incident;
+    this.showEditModal = true;
+  }
+
+  closeEditModal(): void {
+    this.showEditModal = false;
+    this.editingIncident = null;
+  }
+
+  onIncidentUpdated(updateData: { id: string, data: IncidentRequest }): void {
+    this.incidentService.updateIncident(updateData.id, updateData.data).subscribe({
+      next: (updatedIncident) => {
+        const index = this.incidents.findIndex(incident => incident.id === updateData.id);
+        if (index !== -1) {
+          this.incidents[index] = updatedIncident;
+        }
+        this.closeEditModal();
+      },
+      error: (error) => {
+        console.error('Erro ao atualizar incidente:', error);
+        alert('Erro ao atualizar incidente. Tente novamente.');
+      }
+    });
   }
 
   deleteIncident(incidentId: string): void {
