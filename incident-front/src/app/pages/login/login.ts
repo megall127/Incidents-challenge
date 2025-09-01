@@ -32,7 +32,10 @@ export class Login {
     this.authService.login(this.loginData).subscribe({
       next: (response) => {
         this.authService.setToken(response.token);
+        this.authService.setUserName(response.nome);
+        console.log("nome do usuario", response.nome)
         this.router.navigate(['/home']);
+        console.log(response)
       },
       error: (error) => {
         this.errorMessage = error.error?.message || 'Erro ao fazer login';

@@ -277,7 +277,6 @@
   }
 }
 
-// Responsive
 @media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;
@@ -297,5 +296,372 @@
 
   .main-content {
     padding: 1rem;
+  }
+}
+
+.incidents-section {
+  margin-top: 3rem;
+
+  h3 {
+    color: #333;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    text-align: center;
+  }
+}
+
+.loading-container {
+  text-align: center;
+  padding: 2rem;
+
+  .loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  p {
+    color: #666;
+    margin: 0;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.no-incidents {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.incidents-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.incident-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.incident-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+
+  .incident-title {
+    margin: 0;
+    color: #333;
+    font-size: 1.25rem;
+    flex: 1;
+  }
+
+  .incident-badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+}
+
+.priority-badge, .status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.priority-badge {
+  &.priority-critical {
+    background: #dc3545;
+    color: white;
+  }
+
+  &.priority-high {
+    background: #fd7e14;
+    color: white;
+  }
+
+  &.priority-medium {
+    background: #ffc107;
+    color: #212529;
+  }
+
+  &.priority-low {
+    background: #28a745;
+    color: white;
+  }
+}
+
+.status-badge {
+  &.status-open {
+    background: #007bff;
+    color: white;
+  }
+
+  &.status-in-progress {
+    background: #17a2b8;
+    color: white;
+  }
+
+  &.status-resolved {
+    background: #28a745;
+    color: white;
+  }
+
+  &.status-cancelled {
+    background: #6c757d;
+    color: white;
+  }
+}
+
+.incident-content {
+  .incident-description {
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  .incident-details {
+    display: grid;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+
+    .detail-item {
+      color: #555;
+      font-size: 0.9rem;
+
+      strong {
+        color: #333;
+      }
+    }
+  }
+
+  .incident-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    .tag {
+      background: #e9ecef;
+      color: #495057;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .incident-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    .incident-badges {
+      align-self: flex-start;
+    }
+  }
+
+  .incident-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+.comments-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+
+  .comments-title {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+}
+
+.loading-comments {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+  padding: 1rem 0;
+
+  .loading-spinner.small {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+  }
+}
+
+.comments-list {
+  margin-bottom: 1.5rem;
+}
+
+.comment-item {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-left: 3px solid #007bff;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+
+  .comment-author {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+  }
+
+  .comment-date {
+    color: #666;
+    font-size: 0.8rem;
+  }
+
+  .delete-comment-btn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.comment-message {
+  color: #555;
+  margin: 0;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.no-comments {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+
+  p {
+    margin: 0;
+    font-style: italic;
+  }
+}
+
+.add-comment-section {
+  .comment-input-container {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+  }
+
+  .comment-input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    resize: vertical;
+    min-height: 60px;
+    font-family: inherit;
+
+    &:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    }
+
+    &::placeholder {
+      color: #999;
+    }
+  }
+
+  .send-comment-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    white-space: nowrap;
+    min-width: 80px;
+
+    &:hover:not(:disabled) {
+      background: #0056b3;
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .add-comment-section {
+    .comment-input-container {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .send-comment-btn {
+      align-self: flex-end;
+      width: auto;
+    }
+  }
+
+  .comment-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    .comment-date {
+      order: 3;
+      width: 100%;
+    }
   }
 }

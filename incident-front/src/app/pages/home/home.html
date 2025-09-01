@@ -16,6 +16,108 @@
         Criar Novo Incidente
       </button>
     </div>
+
+    <!-- Lista de Incidentes -->
+    <div class="incidents-section">
+      <h3>Incidentes</h3>
+      
+      <div class="loading-container" *ngIf="loadingIncidents">
+        <div class="loading-spinner"></div>
+        <p>Carregando incidentes...</p>
+      </div>
+
+      <div class="no-incidents" *ngIf="!loadingIncidents && incidents.length === 0">
+        <p>Nenhum incidente encontrado.</p>
+      </div>
+
+      <div class="incidents-list" *ngIf="!loadingIncidents && incidents.length > 0">
+        <div class="incident-card" *ngFor="let incident of incidents">
+          <div class="incident-header">
+            <h4 class="incident-title">{{ incident.titulo }}</h4>
+            <div class="incident-badges">
+              <span class="priority-badge" [class]="getPriorityClass(incident.prioridade)">
+                {{ incident.prioridade }}
+              </span>
+              <span class="status-badge" [class]="getStatusClass(incident.status)">
+                {{ incident.status }}
+              </span>
+            </div>
+          </div>
+          
+          <div class="incident-content">
+            <p class="incident-description" *ngIf="incident.descricao">
+              {{ incident.descricao }}
+            </p>
+            
+            <div class="incident-details">
+              <div class="detail-item">
+                <strong>Responsável:</strong> {{ incident.responsavelEmail }}
+              </div>
+              <div class="detail-item">
+                <strong>Aberto em:</strong> {{ formatDate(incident.dataAbertura) }}
+              </div>
+            </div>
+
+            <div class="incident-tags" *ngIf="incident.tags && incident.tags.length > 0">
+              <span class="tag" *ngFor="let tag of incident.tags">{{ tag }}</span>
+            </div>
+          </div>
+
+          <!-- Seção de Comentários -->
+          <div class="comments-section">
+            <h5 class="comments-title">Comentários</h5>
+            
+            <!-- Loading dos comentários -->
+            <div class="loading-comments" *ngIf="loadingComments[incident.id]">
+              <div class="loading-spinner small"></div>
+              <span>Carregando comentários...</span>
+            </div>
+
+            <!-- Lista de comentários -->
+            <div class="comments-list" *ngIf="!loadingComments[incident.id]">
+              <div class="comment-item" *ngFor="let comment of comments[incident.id]">
+                <div class="comment-header">
+                  <span class="comment-author">{{ comment.autor }}</span>
+                  <span class="comment-date">{{ formatDate(comment.dataCriacao) }}</span>
+                  <button 
+                    class="delete-comment-btn" 
+                    (click)="deleteComment(comment.id, incident.id)"
+                    title="Deletar comentário"
+                  >
+                    ×
+                  </button>
+                </div>
+                <p class="comment-message">{{ comment.mensagem }}</p>
+              </div>
+              
+              <div class="no-comments" *ngIf="!comments[incident.id] || comments[incident.id].length === 0">
+                <p>Nenhum comentário ainda. Seja o primeiro a comentar!</p>
+              </div>
+            </div>
+
+            <!-- Campo para adicionar novo comentário -->
+            <div class="add-comment-section">
+              <div class="comment-input-container">
+                <textarea 
+                  class="comment-input" 
+                  placeholder="Adicione um comentário..."
+                  [(ngModel)]="newComment[incident.id]"
+                  rows="3"
+                ></textarea>
+                <button 
+                  class="send-comment-btn" 
+                  (click)="addComment(incident.id)"
+                  [disabled]="!newComment[incident.id]?.trim() || submittingComment[incident.id]"
+                >
+                  <span *ngIf="submittingComment[incident.id]">Enviando...</span>
+                  <span *ngIf="!submittingComment[incident.id]">Enviar</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 
   <!-- Modal de Criação de Incidente -->
