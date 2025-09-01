@@ -34,16 +34,11 @@ export class IncidentService {
   }
 
 
-  // Métodos para comentários
   getCommentsByIncidentId(incidentId: string): Observable<Comment[]> {
     return this.apiService.get<Comment[]>(`/incidents/${incidentId}/comments`);
   }
 
   createComment(incidentId: string, comment: CommentRequest): Observable<Comment> {
     return this.apiService.post<Comment>(`/incidents/${incidentId}/comments`, comment);
-  }
-
-  deleteComment(commentId: string): Observable<any> {
-    return this.apiService.delete<any>(`/comments/${commentId}`);
   }
 }

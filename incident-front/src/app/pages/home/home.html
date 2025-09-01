@@ -79,13 +79,6 @@
                 <div class="comment-header">
                   <span class="comment-author">{{ comment.autor }}</span>
                   <span class="comment-date">{{ formatDate(comment.dataCriacao) }}</span>
-                  <button 
-                    class="delete-comment-btn" 
-                    (click)="deleteComment(comment.id, incident.id)"
-                    title="Deletar comentário"
-                  >
-                    ×
-                  </button>
                 </div>
                 <p class="comment-message">{{ comment.mensagem }}</p>
               </div>

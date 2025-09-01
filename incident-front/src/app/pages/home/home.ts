@@ -77,6 +77,7 @@ export class Home implements OnInit {
         this.incidents = incidents;
         this.loadingIncidents = false;
         incidents.forEach(incident => {
+          console.log(incident)
           this.loadComments(incident.id);
         });
       },
@@ -125,17 +126,6 @@ export class Home implements OnInit {
       error: (error) => {
         console.error('Erro ao adicionar comentário:', error);
         this.submittingComment[incidentId] = false;
-      }
-    });
-  }
-
-  deleteComment(commentId: string, incidentId: string): void {
-    this.incidentService.deleteComment(commentId).subscribe({
-      next: () => {
-        this.comments[incidentId] = this.comments[incidentId].filter(c => c.id !== commentId);
-      },
-      error: (error) => {
-        console.error('Erro ao deletar comentário:', error);
       }
     });
   }
