@@ -7,7 +7,6 @@
   <main class="main-content">
     <div class="welcome-section">
       <h2>Bem-vindo ao Sistema de Gerenciamento de Incidentes</h2>
-      <p>Gerencie seus incidentes de forma eficiente e organizada.</p>
     </div>
 
     <div class="actions-section">
@@ -63,6 +62,9 @@
               <div class="detail-item">
                 <strong>Aberto em:</strong> {{ formatDate(incident.dataAbertura) }}
               </div>
+              <div class="detail-item" *ngIf="incident.dataAtualizacao">
+                <strong>Última atualização:</strong> {{ formatDate(incident.dataAtualizacao) }}
+              </div>
             </div>
 
             <div class="incident-tags" *ngIf="incident.tags && incident.tags.length > 0">
@@ -106,7 +108,7 @@
                 <button 
                   class="send-comment-btn" 
                   (click)="addComment(incident.id)"
-                  [disabled]="!newComment[incident.id]?.trim() || submittingComment[incident.id]"
+                  [disabled]="!newComment[incident.id] || !newComment[incident.id].trim() || submittingComment[incident.id]"
                 >
                   <span *ngIf="submittingComment[incident.id]">Enviando...</span>
                   <span *ngIf="!submittingComment[incident.id]">Enviar</span>
