@@ -39,7 +39,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String userEmail;
         
+        System.out.println("=== JWT Filter Debug ===");
+        System.out.println("Request URI: " + request.getRequestURI());
+        System.out.println("Method: " + request.getMethod());
+        System.out.println("Auth Header: " + (authHeader != null ? authHeader.substring(0, Math.min(20, authHeader.length())) + "..." : "null"));
+        
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            System.out.println("No valid auth header found, continuing...");
             filterChain.doFilter(request, response);
             return;
         }
@@ -48,28 +54,52 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         
         try {
             userEmail = jwtService.extractEmail(jwt);
+            System.out.println("Extracted email: " + userEmail);
             
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-                
-                if (jwtService.validateToken(jwt, userDetails.getUsername())) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
-                    );
+                try {
+                    UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+                    System.out.println("User details loaded: " + userDetails.getUsername());
                     
-                    authToken.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
+                    boolean isValid = jwtService.validateToken(jwt, userDetails.getUsername());
+                    System.out.println("Token validation result: " + isValid);
                     
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    if (isValid) {
+                        System.out.println("Token validated successfully");
+                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+                        
+                        authToken.setDetails(
+                                new WebAuthenticationDetailsSource().buildDetails(request)
+                        );
+                        
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                        System.out.println("Authentication set in context");
+                    } else {
+                        System.out.println("Token validation failed - clearing context");
+                        SecurityContextHolder.clearContext();
+                    }
+                } catch (Exception userDetailsException) {
+                    System.err.println("Error loading user details: " + userDetailsException.getMessage());
+                    userDetailsException.printStackTrace();
+                    SecurityContextHolder.clearContext();
+                }
+            } else {
+                System.out.println("User email is null or already authenticated");
+                if (SecurityContextHolder.getContext().getAuthentication() != null) {
+                    System.out.println("Current authentication: " + SecurityContextHolder.getContext().getAuthentication().getName());
                 }
             }
         } catch (Exception e) {
-            logger.error("Erro ao processar token JWT: " + e.getMessage());
+            System.err.println("Error processing JWT token: " + e.getMessage());
+            e.printStackTrace();
             SecurityContextHolder.clearContext();
         }
+        
+        System.out.println("=== End JWT Filter Debug ===");
         filterChain.doFilter(request, response);
     }
 }

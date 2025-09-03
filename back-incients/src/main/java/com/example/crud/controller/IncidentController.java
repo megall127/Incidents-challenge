@@ -32,11 +32,9 @@ public class IncidentController {
     @Autowired
     private CommentRepository commentRepository;
 
-    // Método auxiliar para converter Incident para IncidentResponse
     private IncidentResponse convertToIncidentResponse(Incident incident) {
         List<CommentResponse> commentResponses = null;
         
-        // Buscar comentários do banco de dados para garantir que estejam carregados
         List<Comment> comments = commentRepository.findByIncidentIdOrderByDataCriacaoDesc(incident.getId());
         
         if (comments != null && !comments.isEmpty()) {
@@ -149,20 +147,30 @@ public class IncidentController {
     
     @DeleteMapping("/incidents/{id}")
     public ResponseEntity<?> deleteIncident(@PathVariable UUID id) {
+        System.out.println("=== DELETE Incident Debug ===");
+        System.out.println("Deleting incident with ID: " + id);
+        
         Incident existingIncident = incidentRepository.findById(id).orElse(null);
         
         if (existingIncident == null) {
+            System.out.println("Incident not found");
             Map<String, Object> response = new HashMap<>();
             response.put("error", "Incidente não encontrado");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
         
+        System.out.println("Found incident: " + existingIncident.getTitulo());
+        System.out.println("Deleting incident...");
+        
         incidentRepository.delete(existingIncident);
+        
+        System.out.println("Incident deleted successfully");
         
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Incidente deletado com sucesso");
         response.put("deletedIncident", convertToIncidentResponse(existingIncident));
         
+        System.out.println("=== End DELETE Incident Debug ===");
         return ResponseEntity.ok(response);
     }
     

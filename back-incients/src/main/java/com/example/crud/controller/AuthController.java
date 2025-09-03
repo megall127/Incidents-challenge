@@ -45,9 +45,17 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
         try {
+            System.out.println("=== LOGIN DEBUG ===");
+            System.out.println("Login attempt for email: " + request.getEmail());
+            
             LoginResponse response = authService.login(request);
+            System.out.println("Login successful for user: " + response.getNome());
+            System.out.println("Token generated: " + (response.getToken() != null ? response.getToken().substring(0, 20) + "..." : "null"));
+            System.out.println("=== END LOGIN DEBUG ===");
+            
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
+            System.err.println("Login failed: " + e.getMessage());
             return ResponseEntity.badRequest().body(new LoginResponse(null, null, e.getMessage()));
         }
     }
