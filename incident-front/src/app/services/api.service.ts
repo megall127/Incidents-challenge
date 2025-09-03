@@ -24,7 +24,12 @@ export class ApiService {
   }
 
   delete<T>(endpoint: string): Observable<T> {
-    return this.http.delete<T>(`${this.baseUrl}${endpoint}`, this.getHeaders());
+    const url = `${this.baseUrl}${endpoint}`;
+    const headers = this.getHeaders();
+    
+    console.log('DELETE Request:', { url, headers });
+    
+    return this.http.delete<T>(url, headers);
   }
 
   patch<T>(endpoint: string, data: any): Observable<T> {
@@ -39,7 +44,28 @@ export class ApiService {
     });
 
     if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
+      // Verifica se o token está expirado
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const expirationTime = payload.exp * 1000; // Converte para milissegundos
+        const currentTime = Date.now();
+        
+        if (currentTime >= expirationTime) {
+          console.log('Token expirado, removendo...');
+          localStorage.removeItem('token');
+          localStorage.removeItem('userName');
+          return { headers };
+        }
+        
+        headers = headers.set('Authorization', `Bearer ${token}`);
+        console.log('Token encontrado:', token.substring(0, 20) + '...');
+      } catch (error) {
+        console.error('Erro ao decodificar token:', error);
+        localStorage.removeItem('token');
+        localStorage.removeItem('userName');
+      }
+    } else {
+      console.warn('Nenhum token encontrado no localStorage');
     }
 
     return { headers };

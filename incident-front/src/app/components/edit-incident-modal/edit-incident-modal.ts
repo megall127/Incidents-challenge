@@ -28,7 +28,7 @@ export class EditIncidentModal implements OnInit {
     tags: []
   };
 
-  prioridades = ['BAIXA', 'MEDIA', 'ALTA', 'CRITICA'];
+  prioridades = ['BAIXA', 'MEDIA', 'ALTA'];
   status = ['ABERTO', 'EM_ANDAMENTO', 'RESOLVIDA', 'CANCELADA'];
 
   ngOnInit(): void {

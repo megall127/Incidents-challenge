@@ -27,7 +27,7 @@ export class CreateIncidentModal {
     tags: []
   };
 
-  prioridades = ['BAIXA', 'MEDIA', 'ALTA', 'CRITICA'];
+  prioridades = ['BAIXA', 'MEDIA', 'ALTA'];
   status = ['ABERTO', 'EM_ANDAMENTO', 'RESOLVIDA', 'CANCELADA'];
 
   closeModal(): void {

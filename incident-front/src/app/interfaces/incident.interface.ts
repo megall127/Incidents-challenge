@@ -2,18 +2,19 @@ export interface Incident {
   id: string;
   titulo: string;
   descricao?: string;
-  prioridade: 'BAIXA' | 'MEDIA' | 'ALTA' | 'CRITICA';
+  prioridade: 'BAIXA' | 'MEDIA' | 'ALTA';
   status: 'ABERTO' | 'EM_ANDAMENTO' | 'RESOLVIDA' | 'CANCELADA';
   responsavelEmail: string;
   tags?: string[];
   dataAbertura: string;
   dataAtualizacao?: string;
+  comments?: Comment[];
 }
 
 export interface IncidentRequest {
   titulo: string;
   descricao?: string;
-  prioridade?: 'BAIXA' | 'MEDIA' | 'ALTA' | 'CRITICA';
+  prioridade?: 'BAIXA' | 'MEDIA' | 'ALTA' ;
   status?: 'ABERTO' | 'EM_ANDAMENTO' | 'RESOLVIDA' | 'CANCELADA';
   responsavelEmail: string;
   tags?: string[];

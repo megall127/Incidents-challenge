@@ -1,0 +1,29 @@
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-content delete-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Confirmar Exclusão</h3>
+      <button class="close-btn" (click)="closeModal()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="warning-icon">
+      </div>
+      
+      <div class="delete-message">
+        <h4>Tem certeza que deseja excluir este incidente?</h4>
+        <p class="incident-title">{{ incident?.titulo }}</p>
+        
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" (click)="closeModal()" [disabled]="isLoading">
+          Cancelar
+        </button>
+        <button type="button" class="delete-btn" (click)="confirmDelete()" [disabled]="isLoading">
+          <span *ngIf="isLoading">Excluindo...</span>
+          <span *ngIf="!isLoading">Sim, Excluir</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

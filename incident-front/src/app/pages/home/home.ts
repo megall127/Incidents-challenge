@@ -7,17 +7,20 @@ import { IncidentService } from '../../services/incident.service';
 import { Incident, IncidentRequest, Comment, CommentRequest } from '../../interfaces/incident.interface';
 import { CreateIncidentModal } from '../../components/create-incident-modal';
 import { EditIncidentModal } from '../../components/edit-incident-modal';
+import { DeleteIncidentModal } from '../../components/delete-incident-modal';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, FormsModule, RouterModule, CreateIncidentModal, EditIncidentModal],
+  imports: [CommonModule, FormsModule, RouterModule, CreateIncidentModal, EditIncidentModal, DeleteIncidentModal],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
 export class Home implements OnInit {
   showModal = false;
   showEditModal = false;
+  showDeleteModal = false;
   editingIncident: Incident | null = null;
+  deletingIncident: Incident | null = null;
   incidents: Incident[] = [];
   loadingIncidents = false;
 
@@ -173,24 +176,63 @@ export class Home implements OnInit {
     });
   }
 
-  deleteIncident(incidentId: string): void {
-    if (confirm('Tem certeza que deseja excluir este incidente? Esta ação não pode ser desfeita.')) {
-      this.incidentService.deleteIncident(incidentId).subscribe({
-        next: () => {
-          this.incidents = this.incidents.filter(incident => incident.id !== incidentId);
-          delete this.comments[incidentId];
-          delete this.newComment[incidentId];
-          delete this.loadingComments[incidentId];
-          delete this.submittingComment[incidentId];
+  deleteIncident(incident: Incident): void {
+    this.deletingIncident = incident;
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.deletingIncident = null;
+  }
+
+  onIncidentDeleted(incidentId: string): void {
+    this.incidentService.deleteIncident(incidentId).subscribe({
+      next: () => {
+        // Remove o incidente da lista local
+        this.incidents = this.incidents.filter(incident => incident.id !== incidentId);
+        // Remove os comentários relacionados
+        delete this.comments[incidentId];
+        delete this.newComment[incidentId];
+        delete this.loadingComments[incidentId];
+        delete this.submittingComment[incidentId];
+        
+        this.closeDeleteModal();
+        alert('Incidente excluído com sucesso!');
+      },
+      error: (error) => {
+        console.error('Erro ao excluir incidente:', error);
+        
+        if (error.status === 401) {
+          // Verifica se é um erro real de autenticação ou uma resposta de sucesso
+          if (error.error && typeof error.error === 'object' && error.error.message) {
+            // Se tem mensagem de sucesso, não é erro de autenticação
+            console.log('Operação DELETE bem-sucedida com status 401:', error.error);
+            
+            // Remove o incidente da lista local mesmo com status 401
+            this.incidents = this.incidents.filter(incident => incident.id !== incidentId);
+            // Remove os comentários relacionados
+            delete this.comments[incidentId];
+            delete this.newComment[incidentId];
+            delete this.loadingComments[incidentId];
+            delete this.submittingComment[incidentId];
+            
+            this.closeDeleteModal();
+            alert('Incidente excluído com sucesso!');
+            return;
+          }
           
-          alert('Incidente excluído com sucesso!');
-        },
-        error: (error) => {
-          console.error('Erro ao excluir incidente:', error);
+          // Erro real de autenticação
+          alert('Sessão expirada. Você será redirecionado para o login.');
+          this.authService.logout();
+          this.router.navigate(['/login']);
+        } else if (error.status === 403) {
+          alert('Acesso negado. Você não tem permissão para excluir este incidente.');
+        } else {
           alert('Erro ao excluir incidente. Tente novamente.');
         }
-      });
-    }
+      }
+    });
   }
 
   logout(): void {

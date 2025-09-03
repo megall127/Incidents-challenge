@@ -36,9 +36,9 @@
               <button class="edit-btn" (click)="editIncident(incident)">
                 Editar
               </button>
-              <button class="delete-btn" (click)="deleteIncident(incident.id)">
-                Excluir
-              </button>
+                             <button class="delete-btn" (click)="deleteIncident(incident)">
+                 Excluir
+               </button>
             </div>
             <div class="incident-badges">
               <span class="priority-badge" [class]="getPriorityClass(incident.prioridade)">
@@ -133,4 +133,11 @@
     (modalClosed)="closeEditModal()"
     (incidentUpdated)="onIncidentUpdated($event)"
   ></app-edit-incident-modal>
+
+  <app-delete-incident-modal 
+    [showModal]="showDeleteModal"
+    [incident]="deletingIncident"
+    (modalClosed)="closeDeleteModal()"
+    (incidentDeleted)="onIncidentDeleted($event)"
+  ></app-delete-incident-modal>
 </div>
